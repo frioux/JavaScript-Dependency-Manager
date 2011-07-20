@@ -42,7 +42,7 @@ sub file_list_for_provisions {
 
   if ($self->scan_files && !$self->_scanned_files) {
     for my $dir (@{$self->lib_dir}) {
-      $self->scan_dir($dir);
+      $self->_scan_dir($dir);
     }
     $self->_scanned_files(1);
   }
@@ -50,11 +50,11 @@ sub file_list_for_provisions {
   my %ret;
   tie %ret, 'Tie::IxHash';
   for my $requested_provision (@$provisions) {
-    my $files = $self->files_providing($requested_provision);
+    my $files = $self->_files_providing($requested_provision);
 
     # for now we just use the first file
     my $file = $files->[0];
-    if (my $requirements = $self->direct_requirements_for($file)) {
+    if (my $requirements = $self->_direct_requirements_for($file)) {
       $ret{$_} = 1 for $self->file_list_for_provisions($requirements);
     }
     $ret{$file} = 1;
@@ -63,19 +63,19 @@ sub file_list_for_provisions {
   return keys %ret;
 }
 
-sub scan_dir {
+sub _scan_dir {
   my ($self, $dir) = @_;
   my $dh;
   opendir $dh, $dir;
   my @files = grep { $_ ne '.' && $_ ne '..' } readdir $dh;
   for (@files) {
     my $fqfn = "$dir/$_";
-    $self->scan_dir($fqfn) if $self->recurse && -d $fqfn;
-    $self->scan_file($fqfn) if -f $fqfn;
+    $self->_scan_dir($fqfn) if $self->recurse && -d $fqfn;
+    $self->_scan_file($fqfn) if -f $fqfn;
   }
 }
 
-sub scan_file {
+sub _scan_file {
   my ($self, $file) = @_;
   return unless $file =~ /\.js$/;
   open my $fh, '<', $file;
@@ -90,14 +90,14 @@ sub scan_file {
   }
 }
 
-sub files_providing {
+sub _files_providing {
   my ($self, $provision) = @_;
 
   $self->provisions->{$provision}
     or die "no such provision '$provision' found!";
 }
 
-sub direct_requirements_for {
+sub _direct_requirements_for {
   my ($self, $file) = @_;
 
   $self->requirements->{$file}
