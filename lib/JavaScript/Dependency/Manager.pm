@@ -1,4 +1,4 @@
-package Javascript::Dependancy::Manager;
+package JavaScript::Dependency::Manager;
 
 use Moo;
 use Sub::Quote;
@@ -50,11 +50,11 @@ sub file_list_for_provisions {
    my %ret;
    tie %ret, 'Tie::IxHash';
    for my $requested_provision (@$provisions) {
-      my $files = $self->files_providing($requested_provision)
+      my $files = $self->files_providing($requested_provision);
 
       # for now we just use the first file
       my $file = $files->[0];
-      if (my $requirements = $self->requirements->{$files->[0]}) {
+      if (my $requirements = $self->requirements_for($file)) {
          $ret{$_} = 1 for $self->file_list_for_provisions($requirements);
       }
       $ret{$file} = 1;
@@ -93,7 +93,13 @@ sub files_providing {
   my ($self, $provision) = @_;
 
   $self->provisions->{$provision}
-    or die "no such provision '$requested_provision' found!";
+    or die "no such provision '$provision' found!";
+}
+
+sub requirements_for {
+  my ($self, $file) = @_;
+
+  $self->requirements->{$file}
 }
 
 1;

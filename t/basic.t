@@ -5,9 +5,9 @@ use warnings;
 
 use Test::More;
 
-use Javascript::Dependancy::Manager;
+use JavaScript::Dependency::Manager;
 
-my $mgr = Javascript::Dependancy::Manager->new(
+my $mgr = JavaScript::Dependency::Manager->new(
    lib_dir => ['t/js-lib'],
    recurse => 1,
    provisions => {
