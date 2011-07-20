@@ -38,29 +38,29 @@ has requirements => (
 );
 
 sub file_list_for_provisions {
-   my ($self, $provisions) = @_;
+  my ($self, $provisions) = @_;
 
-   if ($self->scan_files && !$self->_scanned_files) {
-      for my $dir (@{$self->lib_dir}) {
-         $self->scan_dir($dir);
-      }
-      $self->_scanned_files(1);
-   }
+  if ($self->scan_files && !$self->_scanned_files) {
+    for my $dir (@{$self->lib_dir}) {
+      $self->scan_dir($dir);
+    }
+    $self->_scanned_files(1);
+  }
 
-   my %ret;
-   tie %ret, 'Tie::IxHash';
-   for my $requested_provision (@$provisions) {
-      my $files = $self->files_providing($requested_provision);
+  my %ret;
+  tie %ret, 'Tie::IxHash';
+  for my $requested_provision (@$provisions) {
+    my $files = $self->files_providing($requested_provision);
 
-      # for now we just use the first file
-      my $file = $files->[0];
-      if (my $requirements = $self->requirements_for($file)) {
-         $ret{$_} = 1 for $self->file_list_for_provisions($requirements);
-      }
-      $ret{$file} = 1;
-   }
+    # for now we just use the first file
+    my $file = $files->[0];
+    if (my $requirements = $self->requirements_for($file)) {
+      $ret{$_} = 1 for $self->file_list_for_provisions($requirements);
+    }
+    $ret{$file} = 1;
+  }
 
-   return keys %ret;
+  return keys %ret;
 }
 
 sub scan_dir {
