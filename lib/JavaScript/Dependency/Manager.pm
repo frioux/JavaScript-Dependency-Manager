@@ -3,6 +3,7 @@ package JavaScript::Dependency::Manager;
 use Moo;
 use Sub::Quote;
 use Tie::IxHash;
+use autodie;
 
 has lib_dir => (
   is       => 'ro',
