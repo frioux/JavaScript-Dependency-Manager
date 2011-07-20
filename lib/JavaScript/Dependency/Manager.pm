@@ -77,6 +77,7 @@ sub scan_dir {
 
 sub scan_file {
   my ($self, $file) = @_;
+  return unless $file =~ /\.js$/;
   open my $fh, '<', $file;
   while (<$fh>) {
     if (m[//\s*provides:\s*(\S+)]) {
