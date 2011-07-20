@@ -54,7 +54,7 @@ sub file_list_for_provisions {
 
     # for now we just use the first file
     my $file = $files->[0];
-    if (my $requirements = $self->requirements_for($file)) {
+    if (my $requirements = $self->direct_requirements_for($file)) {
       $ret{$_} = 1 for $self->file_list_for_provisions($requirements);
     }
     $ret{$file} = 1;
@@ -97,7 +97,7 @@ sub files_providing {
     or die "no such provision '$provision' found!";
 }
 
-sub requirements_for {
+sub direct_requirements_for {
   my ($self, $file) = @_;
 
   $self->requirements->{$file}
