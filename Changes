@@ -1,5 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.001000  2011-07-21 22:32:25 CST6CDT
  - Initial Release
 
