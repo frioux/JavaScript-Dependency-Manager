@@ -1,5 +1,7 @@
 package JavaScript::Dependency::Manager;
 
+# ABSTRACT: Manage your JavaScript dependencies
+
 use Moo;
 use Sub::Quote;
 use Tie::IxHash;
@@ -104,7 +106,85 @@ sub _direct_requirements_for {
   $self->requirements->{$file}
 }
 
+=head1 SYNOPSIS
+
+First, annotate your javascript files with C<provides> and/or C<requires>:
+
+ // provides: Ack
+ // requires: underscore
+ var Ack = _.throttle(function(foo) {
+   alert('ACK! ' + foo)
+ }, 100)
+
+ // etc, etc
+
+Now you can use C<JavaScript::Dependency::Manager> to automatically create a
+list of files needed for a given L</provision>.
+
+ use JavaScript::Dependency::Manager;
+
+ my $mgr = JavaScript::Dependency::Manager->new(
+   lib_dir => ['root/js/lib'],
+   provisions => {
+     underscore => ['root/js/lib/underscore/underscore.js'],
+   },
+ );
+
+ my @files = $mgr->file_list_for_provisions(['Lynx.ui.form.MWHY']);
+
+Note that I manually set a provision above.  That's because C<underscore> is an
+external library, so I shouldn't edit it's source to set it's provisions.
+
+=head1 DESCRIPTION
+
+This module simply helps you automatically create a list of necessary files
+based on a list of "modules", which are merely your way of identifying
+functions, objects, classes, or whatever else that you would like to load. It
+will correctly order the list of files to load based on your defined
+requirements.
+
+=head1 TERMS
+
+=head2 requirement
+
+A C<requirement> is simply a B<module> that a given B<file> needs to run.
+
+=head2 provision
+
+A C<provision> is simply a B<module> that a given B<file> has within it.
+
+=head1 METHODS
+
+=head2 file_list_for_provisions
+
+ my @files = $mgr->file_list_for_provisions(['Foo', 'Bar'])
+
+This method returns a list of files needed to load a list of provisions.
+
+=head1 ATTRIBUTES
+
+=head2 lib_dir
+
+B<required>.  An C<ArrayRef> of directories to scan to create the list of
+L</requirement>s and L</provision>s.
+
+=head2 recurse
+
+B<False> by default.  Set to true if you want the tool to recurse into
+subdirectories of the L</lib_dir>.
+
+=head2 scan_files
+
+B<True> by default.  Set to false if you want the tool not to scan files at
+all, but instead use a provided list of L</requirement>s and L</provision>s.
+
+=head1 DEDICATION
+
+C<JavaScript::Dependency::Manager> module is dedicated to my namesake, Arthur
+Dale Schmidt.  He was my grandfather as well as the inventor of a chemical
+called Sand Control 60 (SC60,) which was used in oil fields to reduce the
+need to redrill entire wells due to sand clogging.
+
 1;
 
-# Dedicated to Arthur Dale Schmidt
 # This code was written at the Tallulalh Travel Center in Louisiana
