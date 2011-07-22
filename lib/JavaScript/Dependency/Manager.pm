@@ -185,6 +185,8 @@ Dale Schmidt.  He was my grandfather as well as the inventor of a chemical
 called Sand Control 60 (SC60,) which was used in oil fields to reduce the
 need to redrill entire wells due to sand clogging.
 
+=cut
+
 1;
 
-# This code was written at the Tallulalh Travel Center in Louisiana
+# This code was written at the Tallulah Travel Center in Louisiana
