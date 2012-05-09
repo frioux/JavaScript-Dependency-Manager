@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.001001  2012-05-09 13:08:24 America/Chicago
+ - Fix POD bug that causes module to not compile on new versions of Moo
+
 0.001000  2011-07-21 22:32:25 CST6CDT
  - Initial Release
 
