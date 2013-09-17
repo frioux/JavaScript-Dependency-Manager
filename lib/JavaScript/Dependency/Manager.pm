@@ -2,6 +2,8 @@ package JavaScript::Dependency::Manager;
 
 # ABSTRACT: Manage your JavaScript dependencies
 
+# VERSION
+
 use Moo;
 use Sub::Quote;
 use Tie::IxHash;
