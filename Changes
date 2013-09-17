@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+ - No longer require values in provision lists
+   (aka if you need to say something is provided "for free" you can just use [])
  - Abandon RT
 
 0.001002  2012-11-17 16:10:33 CST6CDT

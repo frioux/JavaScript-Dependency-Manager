@@ -58,11 +58,12 @@ sub file_list_for_provisions {
     my $files = $self->_files_providing($requested_provision);
 
     # for now we just use the first file
-    my $file = $files->[0];
-    if (my $requirements = $self->_direct_requirements_for($file)) {
-      $ret{$_} = 1 for $self->file_list_for_provisions($requirements);
+    if (my $file = $files->[0]) {
+       if (my $requirements = $self->_direct_requirements_for($file)) {
+         $ret{$_} = 1 for $self->file_list_for_provisions($requirements);
+       }
+       $ret{$file} = 1;
     }
-    $ret{$file} = 1;
   }
 
   return keys %ret;
