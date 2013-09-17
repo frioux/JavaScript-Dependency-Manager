@@ -28,6 +28,8 @@ has _scanned_files => (
   is => 'rw',
 );
 
+has lax => ( is => 'ro' );
+
 # hashref where the provision (what a file provides) is the key,
 # and an arrayref of the files that provide the feature are the value
 has provisions => (
@@ -99,8 +101,15 @@ sub _scan_file {
 sub _files_providing {
   my ($self, $provision) = @_;
 
-  $self->provisions->{$provision}
-    or die "no such provision '$provision' found!";
+  my $ret = $self->provisions->{$provision};
+
+  if ($ret) {
+     return $ret
+  } else {
+     die "no such provision '$provision' found!"
+        unless $self->lax;
+     return []
+  }
 }
 
 sub _direct_requirements_for {
@@ -180,6 +189,11 @@ subdirectories of the L</lib_dir>.
 
 B<True> by default.  Set to false if you want the tool not to scan files at
 all, but instead use a provided list of L</requirement>s and L</provision>s.
+
+=head2 lax
+
+B<False> by default.  Set to true if you want the tool not to die on missing
+L</provision>s.
 
 =head1 DEDICATION
 
