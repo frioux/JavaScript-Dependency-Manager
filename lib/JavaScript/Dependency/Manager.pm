@@ -30,6 +30,13 @@ has _scanned_files => (
 
 has lax => ( is => 'ro' );
 
+has filter => (
+   is => 'ro',
+   default => sub {
+      return sub { $_[0] }
+   },
+);
+
 # hashref where the provision (what a file provides) is the key,
 # and an arrayref of the files that provide the feature are the value
 has provisions => (
@@ -68,7 +75,7 @@ sub file_list_for_provisions {
     }
   }
 
-  return keys %ret;
+  return map $self->filter->($_), keys %ret;
 }
 
 sub _scan_dir {
@@ -189,6 +196,12 @@ subdirectories of the L</lib_dir>.
 
 B<True> by default.  Set to false if you want the tool not to scan files at
 all, but instead use a provided list of L</requirement>s and L</provision>s.
+
+=head2 filter
+
+Set to a coderef that can transform the values returned from
+L</file_list_for_provisions>.  An obvious example would be to transform file
+paths into URLs.
 
 =head2 lax
 

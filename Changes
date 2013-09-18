@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+ - Add filter option
  - Add lax option
  - No longer require values in provision lists
    (aka if you need to say something is provided "for free" you can just use [])
