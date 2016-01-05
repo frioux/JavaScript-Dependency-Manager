@@ -8,6 +8,8 @@ use Moo;
 use Sub::Quote;
 use Tie::IxHash;
 use autodie;
+use aliased 'JavaScript::Dependency::Manager::Resolved';
+use Check::ISA;
 
 has lib_dir => (
   is       => 'ro',
@@ -35,6 +37,11 @@ has filter => (
    default => sub {
       return sub { $_[0] }
    },
+);
+
+has delegates => (
+   is => 'ro',
+   default => quote_sub q{ [] },
 );
 
 # hashref where the provision (what a file provides) is the key,
@@ -66,16 +73,25 @@ sub file_list_for_provisions {
   for my $requested_provision (@$provisions) {
     my $files = $self->_files_providing($requested_provision);
 
+    if (obj($files, 'JavaScript::Dependency::Manager::Resolved')) {
+      $ret{"\0$_"} = 1 for @{$files};
+    }
     # for now we just use the first file
-    if (my $file = $files->[0]) {
-       if (my $requirements = $self->_direct_requirements_for($file)) {
-         $ret{$_} = 1 for $self->file_list_for_provisions($requirements);
-       }
-       $ret{$file} = 1;
+    elsif (my $file = $files->[0]) {
+      if (my $requirements = $self->_direct_requirements_for($file)) {
+        $ret{$_} = 1 for $self->file_list_for_provisions($requirements);
+      }
+      $ret{$file} = 1;
     }
   }
 
-  return map $self->filter->($_), keys %ret;
+  warn "$self";
+   use Devel::Dwarn;
+  return map {
+    m/^\0/
+      ? substr($_, 1)
+      : $self->filter->($_)
+  } keys %ret;
 }
 
 sub _scan_dir {
@@ -110,13 +126,20 @@ sub _files_providing {
 
   my $ret = $self->provisions->{$provision};
 
-  if ($ret) {
-     return $ret
-  } else {
-     die "no such provision '$provision' found!"
-        unless $self->lax;
-     return []
+  use Devel::Dwarn;
+  unless ($ret) {
+    DELEGATES:
+    for my $deg (@{ $self->delegates }) {
+      my @ret = $deg->file_list_for_provisions([$provision]);
+      return Resolved->new(\@ret) if scalar @ret
+    }
   }
+
+  return $ret if $ret;
+
+  die "no such provision '$provision' found!"
+     unless $ret || $self->lax;
+  return []
 }
 
 sub _direct_requirements_for {
